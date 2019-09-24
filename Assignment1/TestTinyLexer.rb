@@ -1,5 +1,5 @@
-load "./TinyToken.rb"
-load "./TinyScanner.rb"
+load "./Assignment1/TinyScanner.rb"
+load "./Assignment1/TinyToken.rb"
 # if the file(s) are in the same directory, you can simply precede
 # the file name(s) with ./
 
@@ -9,7 +9,7 @@ load "./TinyScanner.rb"
 # simply include the file name, otherwise, you will need
 # to specify the entire path to the file as we did above
 # to load the other ruby modules
-scan = Scanner.new("filename.txt")
+scan = Scanner.new("./Assignment1/input.tiny")
 tok = scan.nextToken()
 
 # the code below will open a file so that I 

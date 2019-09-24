@@ -26,6 +26,10 @@ class Scanner
 #               each time nextToken() is invoked.
 #   @c        - A one character lookahead 
 	def initialize(filename)
+		if !File.exists?(filename)
+			puts ("file was not found!")
+			exit 0
+		end
 		# Need to modify this code so that the program
 		# doesn't abend if it can't open the file but rather
 		# displays an informative message
@@ -68,28 +72,31 @@ class Scanner
 				str += @c
 				nextCh()
 			end
+			
 		
 			tok = Token.new(Token::WS,str)
 			return tok
-		# elsif ...
-		# more code needed here! complete the code here 
-		# so that your lexer can correctly recognize,
-		# display and return all tokens
-		# in our grammar that we found in the source code file
-		
-		# FYI: You don't HAVE to just stick to if statements
-		# any type of selection statement "could" work. We just need
-		# to be able to programatically identify tokens that we 
-		# encounter in our source code file.
-		
-		# don't want to give back nil token!
-		# remember to include some case to handle
-		# unknown or unrecognized tokens.
-		# below I make the token that you should pass back
-		tok = Token.new("unknown","unknown")
+		elsif (letter?(@c))
+			str = ""
+			while letter?(@c)
+				str += nextCh()
+			end
+			if str == "print"
+				tok = Token.new(Token::PRINT,str)
+			end
+			return tok
+		elsif (numeric?(@c))
+			str =""
+			while numeric?(@c)
+				str += nextCh()
+			end
+			tok = Token.new(Token::INT, str)
+			return tok
 		end
+		tok = Token.new("unknown","unknown")
+		return tok
+	end
 	
-end
 #
 # Helper methods for Scanner
 #
@@ -106,4 +113,4 @@ def whitespace?(lookAhead)
 end
 
 
-
+end

@@ -64,36 +64,72 @@ class Scanner
 	def nextToken() 
 		if @c == "eof"
 			return Token.new(Token::EOF,"eof")
-				
-		elsif (whitespace?(@c))
+		end	
+		if (whitespace?(@c))
 			str =""
 		
 			while whitespace?(@c)
 				str += @c
 				nextCh()
 			end
-			
-		
 			tok = Token.new(Token::WS,str)
 			return tok
-		elsif (letter?(@c))
+		end
+		if (letter?(@c))
 			str = ""
 			while letter?(@c)
-				str += nextCh()
+				str += @c
+				nextCh()
 			end
 			if str == "print"
 				tok = Token.new(Token::PRINT,str)
+				return tok
+			else
+				tok = Token.new(Token::ID,str)
+				return tok
 			end
-			return tok
-		elsif (numeric?(@c))
+		end
+		if (numeric?(@c))
 			str =""
 			while numeric?(@c)
-				str += nextCh()
+				str += @c
+				nextCh()
 			end
 			tok = Token.new(Token::INT, str)
 			return tok
 		end
+		if (@c == "(")
+			str = @c
+			nextCh()
+			return Token.new(Token::LPAREN,str)
+		end
+		if (@c == ")")
+			str = @c
+			nextCh()
+			return Token.new(Token::RPAREN,str)
+		end
+		if (@c == "+")
+			str = @c
+			nextCh()
+			return Token.new(Token::ADDOP,str)
+		end
+		if (@c == "-")
+			str = @c
+			nextCh()
+			return Token.new(Token::SUBOP,str)
+		end
+		if (@c == "=")
+			str = @c
+			nextCh()
+			return Token.new(Token::ASSIGN,str)
+		end
+		if (@c == "/")
+			str = @c
+			nextCh()
+			return Token.new(Token::DIVOP,str)
+		end
 		tok = Token.new("unknown","unknown")
+		nextCh()
 		return tok
 	end
 	

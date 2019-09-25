@@ -128,6 +128,11 @@ class Scanner
 			nextCh()
 			return Token.new(Token::DIVOP,str)
 		end
+		if (@c == "*")
+			str = @c
+			nextCh()
+			return Token.new(Token::TIMESOP,str)
+		end 
 		tok = Token.new("unknown","unknown")
 		nextCh()
 		return tok

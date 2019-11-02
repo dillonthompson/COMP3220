@@ -20,7 +20,7 @@ class Token
    PRINT  = "print"
    ASSGN   = "="
    WS     = "whitespace"
-   UNKNWN = "unknown"
+   UNKNWN = "?"
    
    def initialize(type,text)
       @type = type

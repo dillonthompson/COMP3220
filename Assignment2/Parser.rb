@@ -23,6 +23,7 @@
 load "Token.rb"
 load "Lexer.rb"
 class Parser < Scanner
+	@@count = 0
 	def initialize(filename)
     	super(filename)
     	consume()
@@ -37,7 +38,8 @@ class Parser < Scanner
   	
 	def match(dtype)
       	if (@lookahead.type != dtype)
-         	puts "Expected #{dtype} found #{@lookahead.text}"
+			 puts "Expected #{dtype} found #{@lookahead.text}"
+			 @@count = @@count + 1
       	end
       	consume()
    	end
@@ -46,98 +48,114 @@ class Parser < Scanner
       	while( @lookahead.type != Token::EOF)
         	puts "Entering STMT Rule"
 			statement()  
-      	end
+		end
+		puts "There were #{@@count} parse errors found."
    	end
 
 	def factor()
-		if (@lookahead.type != Token::LPAREN || Token::ID || Token::INT)
-			puts "Expected ( or INT or ID found: #{@lookahead.text}"
-			consume()
-			return
-		end
 		if (@lookahead.type == Token::LPAREN)
-			puts "Found LPAREN token: #{@lookahead.text}"
+			puts "Found LPAREN Token: #{@lookahead.text}"
 			match(Token::LPAREN)
-			puts "Entering EXP rule"
+			puts "Entering EXP Rule"
 			exp()
-			puts "Found RPAREN token: #{@lookahead.text}"
+			puts "Found RPAREN Token: #{@lookahead.text}"
 			match(Token::RPAREN)
+		elsif (@lookahead.type == Token::INT)
+			if (@lookahead.type == Token::INT)
+				puts "Found INT Token: #{@lookahead.text}"
+				match(Token::INT)
+			else
+				match(Token::INT)
+			end
+		elsif (@lookahead.type == Token::ID)
+			puts "Found ID Token: #{@lookahead.text}"
+			match(Token::ID)
+		else (@lookahead.type != Token::LPAREN || Token::ID || Token::INT)
+			puts "Expected ( or INT or ID found #{@lookahead.text}"
+			@@count = @@count + 1
+			consume()
 		end
-		if (@lookahead.type == Token::INT)
-			puts "Found INT token: #{@lookahead.text}"
-			match(Token::INT)
-		end
-		puts "Exiting FACTOR rule"
+		puts "Exiting FACTOR Rule"
 	end
 
 	def ttail()
 		if (@lookahead.type == Token::DIVOP)
-			puts "Found DIVOP token: #{@lookahead.text}"
+			puts "Found DIVOP Token: #{@lookahead.text}"
 			match(Token::DIVOP)
+			puts "Entering FACTOR Rule"
+			factor()
+			puts "Entering TTAIL Rule"
 			ttail()
-		end
-		if (@lookahead.type == Token::MULTOP)
-			puts "Found MULTOP token: #{@lookahead.text}"
+		elsif (@lookahead.type == Token::MULTOP)
+			puts "Found MULTOP Token: #{@lookahead.text}"
 			match(Token::MULTOP)
+			puts "Entering FACTOR Rule"
+			factor()
+			puts "Entering TTAIL Rule"
 			ttail()
+		else
+			puts "Did not find MULTOP or DIVOP Token, choosing EPSILON production"
 		end
-		if (@lookahead.type != Token::DIVOP || Token::MULTOP)
-			puts "Did not find MULTOP or DIVOP token, choosing EPSILON production"
-			consume()
-			return
-		end
-		print "Exiting TTAIL rule"
+		puts "Exiting TTAIL Rule"
 	end
 
 	def etail()
 		if(@lookahead.type == Token::ADDOP)
-			puts "Found ADDOP token: #{@lookahead.text}"
+			puts "Found ADDOP Token: #{@lookahead.text}"
 			match(Token::ADDOP)
+			puts "Entering TERM Rule"
+			term()
+			puts "Entering ETAIL Rule"
 			etail()
-		end
-		if (@lookahead.type == Token::SUBOP)
-			puts "Found SUBOP token: #{@lookahead.text}"
+		elsif (@lookahead.type == Token::SUBOP)
+			puts "Found SUBOP Token: #{@lookahead.text}"
 			match(Token::SUBOP)
+			puts "Entering TERM Rule"
+			term()
+			puts "Entering ETAIL Rule"
 			etail()
+		else 
+			puts "Did not find ADDOP or SUBOP Token, choosing EPSILON production"
 		end
-		if (@lookahead.type != Token::ADDOP || Token::SUBOP)
-			puts "Did not find ADDOP or SUBOP token, choosing EPSILON"
-			consume()
-			return
-		end
-		puts "Exiting ETAIL rule"
+		puts "Exiting ETAIL Rule"
 	end
 
 	def term()
-		puts "Entering FACTOR rule"
+		puts "Entering FACTOR Rule"
 		factor()
-		puts "Entering TTAIL rule"
+		puts "Entering TTAIL Rule"
 		ttail()
-		puts "Exiting TERM rule"
+		puts "Exiting TERM Rule"
 	end
 
 
 	def exp()
-		puts "Entering TERM rule"
+		puts "Entering TERM Rule"
 		term()
-		puts "Entering ETAIL rule"
+		puts "Entering ETAIL Rule"
 		etail()
-		puts "Exiting EXP rule"
+		puts "Exiting EXP Rule"
 	end
 
 
 	def assign()
 		if (@lookahead.type == Token::ID)
-			puts "Found ID token: #{@lookahead.text}"
+			puts "Found ID Token: #{@lookahead.text}"
+			match(Token::ID)
+		else
 			match(Token::ID)
 		end
 		if (@lookahead.type == Token::ASSGN)
-			puts "Found ASSGN token: #{@lookahead.text}"
+			puts "Found ASSGN Token: #{@lookahead.text}"
 			match(Token::ASSGN)
-			puts "Entering EXP rule"
+			puts "Entering EXP Rule"
 			exp()
+		else
+			match(Token::ASSGN)
+			puts "Entering EXP Rule"
+		exp()
 		end
-		consume()
+		puts "Exiting ASSGN Rule"
 	end
 
 
